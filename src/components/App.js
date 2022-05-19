@@ -1,26 +1,34 @@
-import AddContact from './AddContact';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import Header from './Header';
+import AddContact from './AddContact';
 import ContactList from './ContactList';
 
 function App() {
-  const contacts = [
-    {
-    id: "1",
-    name: "Shopan",
-    email: "test@gmail.com"
-  },
-  {
-    id: "2",
-    name: "Mou",
-    email: "mou@gmail.com"
+  const LOCAL_STORAGE_KEY = "contacts";
+  const storedContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY)) || [];
+  const [contacts, setContacts] = useState(storedContacts);
+  //const [contacts, setContacts] = useState([]); //this resets the local storage after refresh ?? 
+
+  const addContactHandler = (contact) => {
+    setContacts([...contacts, contact])
   }
-]
+
+  useEffect(()=>{
+    const retrieveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
+    if(retrieveContacts) setContacts(retrieveContacts);
+  },[]);
+
+  useEffect(()=>{
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
+  },[contacts]);
+
+
   return (
     <div className='ui container'>
       <Header />
-      <AddContact />
-      <ContactList contact={contacts} />
+      <AddContact addContactHandler={addContactHandler}/>
+      <ContactList contacts={contacts} />
     </div>
   );
 }
